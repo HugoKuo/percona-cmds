@@ -9,6 +9,7 @@ echo ""
 echo -e "Press \e[32m[ENTER]\e[39m to continue"
 read enter
 
+sudo mkdir /tmp/MY_DB_local
 sudo innobackupex --user=root --password=password /tmp/MY_DB_local
 
 sleep 3

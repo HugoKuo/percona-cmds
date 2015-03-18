@@ -1,0 +1,4 @@
+#! /bin/bash
+
+mysql -uroot -ppassword -e "DROP DATABASE keystone"
+./db-showDBs

@@ -1,0 +1,18 @@
+#! /bin/bash
+
+SWIFT_API_IP=192.168.56.10
+
+mkdir /tmp/downloaded_MY_DB1
+
+sudo xbcloud get --storage=Swift --swift-container=percona \
+	--swift-user=demo \
+	--swift-url=http://$SWIFT_API_IP/ \
+	--swift-key=password MY_DB1 \
+	 | xbstream -xv -C /tmp/downloaded_MY_DB1
+
+echo ""
+echo "Enter"
+read enter
+
+sudo innobackupex --apply-log /tmp/downloaded_MY_DB1
+sudo innobackupex --copy-back /tmp/downloaded_MY_DB1
