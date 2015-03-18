@@ -1,0 +1,33 @@
+#! /bin/bash
+
+echo "This innobackupex command backups your MySQL to Swift. The support auth version is v1.0."
+echo -e "xbcloud uploads backup to Swift as large object by leveraging \e[31mSLO support. SLO must be enabled within this cluster.\e[39m" 
+echo "It requires the available username/password of your MySQL databse. To run this command you need sudo permission to access /var/lib/mysql"
+echo ""
+echo "    \$sudo innobackupex --user=root --password=password \ "
+echo "		--stream=xbstream /tmp \ "
+echo "		| xbcloud put --storage=Swift \ "
+echo "		--swift-container=percona-backup \ "
+echo "		--swift-user=demo \ "
+echo "		--swift-url=http://192.168.56.10/ \ "
+echo "		--swift-key=password My_DB1"
+echo ""
+
+echo -e "Press \e[32m[ENTER]\e[39m to continue" 
+read enter
+
+sudo innobackupex --user=root --password=password \
+	--stream=xbstream /tmp \
+	| xbcloud put --storage=Swift \
+	--swift-container=percona \
+	--swift-user=demo \
+	--swift-url=http://192.168.56.10/ \
+	--swift-key=password MY_DB1
+sleep 3
+echo ""
+echo -e "You can found new backup been created in Swift as \e[31mSLO large object \e[39m in container percona"
+echo ""
+
+TK=$(curl -si http://192.168.56.10/auth/v1.0 -H "x-auth-user:demo" -H "x-auth-key:password"  | grep X-Storage-Token | cut -d " " -f 2)
+echo ""
+curl http://192.168.56.10/v1/AUTH_demo/percona -H "x-auth-token:$TK"

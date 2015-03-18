@@ -1,0 +1,18 @@
+#! /bin/bash
+
+echo "This innobackupex command backups your MySQL to /tmp/MY_DB_local folder. This folder must existing." 
+echo "It requires the available username/password of your MySQL databse. To run this command you need sudo permission to access /var/lib/mysql"
+echo ""
+echo "    \$sudo innobackupex --user=root --password=password /tmp/MY_DB_local"
+echo ""
+
+echo -e "Press \e[32m[ENTER]\e[39m to continue"
+read enter
+
+sudo innobackupex --user=root --password=password /tmp/MY_DB_local
+
+sleep 3
+echo ""
+echo "You can found new backup been created"
+echo ""
+ls -alh /tmp/ ; ls -alh /tmp/MY_DB_local
