@@ -1,0 +1,40 @@
+#! /bin/bash
+
+#SWIFT_API_IP=192.168.56.10
+
+#mkdir /tmp/downloaded_MY_DB1
+
+#sudo xbcloud get --storage=Swift --swift-container=percona \
+#	--swift-user=demo \
+#	--swift-url=http://$SWIFT_API_IP/ \
+#	--swift-key=password MY_DB1 \
+#	 | xbstream -xv -C /tmp/downloaded_MY_DB1
+
+echo "To full_backup restore from local you need to specify the backuped folder in innobackupex. Also needed permission of /var/lib/mysql.  "
+echo ""
+echo "	sudo innobackupex --apply-log \$BACKUPED_full_directory"
+echo "	sudo innobackupex --copy-back \$BACKUPED_full_directory"
+echo ""
+
+echo ""
+echo -e "Press \e[32m[ENTER]\e[39m to continue"
+read enter
+
+echo "The /var/lib/mysql must be in empty for full_backup restore. Ensure that you flush all data of the directory"
+echo "In this example, we call find -delete to remove the whole path of /var/lib/mysql and make a new one" 
+sudo find /var/lib/mysql/ -delete
+sudo mkdir /var/lib/mysql
+echo ""
+echo "The /var/lib/mysql is empty now."
+echo -e "Please press \e[32m[ENTER]\e[39m to restore db data back" 
+read enter
+
+sudo innobackupex --apply-log $1
+sudo innobackupex --copy-back $1
+
+echo -e "Since the restored data may not owned by user:mysql. We need to \e[31m\$sudo chown -R mysql:mysql /var/lib/mysql\e[39m. And restart mysql server"
+echo -e "Press \e[32m[ENTER]\e[39m to continue"
+read enter
+
+sudo chown -R mysql:mysql /var/lib/mysql 
+sudo service mysql restart 

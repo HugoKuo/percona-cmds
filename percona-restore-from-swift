@@ -1,18 +1,56 @@
 #! /bin/bash
 
+
 SWIFT_API_IP=192.168.56.10
+USER_NAME=demo
+USER_KEY=password
 
+echo "To restore DB from Swift. It's a two steps operations"
+echo "    1) Using xbcloud to download the object from Swift to local media"
+echo""
+echo "		\$sudo xbcloud get --storage=Swift --swift-container=percona \ "
+echo "		        --swift-user=\$USER_NAME \ "
+echo "		        --swift-url=http://\$SWIFT_API_IP/ \ "
+echo "                  --swift-key=\$USER_KEY MY_DB1 \ "
+echo "		         | xbstream -xv -C /tmp/downloaded_MY_DB1 "
+
+echo ""
+echo "	  2) To resotre DB from local directory. This is 100% same as resotre from local"
+echo ""
+echo "		\$sudo innobackupex --apply-log /tmp/downloaded_MY_DB1	"
+echo "		\$sudo innobackupex --copy-back /tmp/downloaded_MY_DB1	"
+echo ""
+echo -e "Press \e[32m[ENTER]\e[39m to continue"
+read enter
+		
+sudo find /tmp/downloaded_MY_DB1 -delete
 mkdir /tmp/downloaded_MY_DB1
-
+echo ""
+echo "Download the backup to /tmp/downloaded_MY_DB1"
+echo ""
 sudo xbcloud get --storage=Swift --swift-container=percona \
-	--swift-user=demo \
+	--swift-user=$USER_NAME \
 	--swift-url=http://$SWIFT_API_IP/ \
-	--swift-key=password MY_DB1 \
+	--swift-key=$USER_KEY MY_DB1 \
 	 | xbstream -xv -C /tmp/downloaded_MY_DB1
 
 echo ""
-echo "Enter"
+sudo ls -al /tmp/downloaded_MY_DB1
+echo ""
+echo -e "Press \e[32m[ENTER]\e[39m to copy data back to /var/lib/mysql"
 read enter
+
+
+sudo find /var/lib/mysql/ -delete 
+sudo mkdir /var/lib/mysql
 
 sudo innobackupex --apply-log /tmp/downloaded_MY_DB1
 sudo innobackupex --copy-back /tmp/downloaded_MY_DB1
+
+echo -e "Press \e[32m[ENTER]\e[39m to change the owner of /var/lib/mysql"
+read enter
+
+
+sudo chown -R mysql:mysql /var/lib/mysql
+sudo service mysql stop
+sudo service mysql start
