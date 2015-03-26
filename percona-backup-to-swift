@@ -1,10 +1,10 @@
 #! /bin/bash
 
 # Setup the Swift API IP here 
-SWIFT_API_IP=192.168.56.10
-USER_NAME=demo
-USER_KEY=password
-
+#SWIFT_API_IP=192.168.56.10
+#USER_NAME=demo
+#USER_KEY=password
+source SwiftCredential.conf
 echo "This innobackupex command backups your MySQL to Swift. The supported auth version is v1.0."
 echo -e "xbcloud uploads backup to Swift as large object by leveraging \e[31mSLO support. SLO must be enabled within this cluster.\e[39m" 
 echo "It requires the available username/password of your MySQL databse. To run this command you need sudo permission to access /var/lib/mysql"
@@ -13,9 +13,9 @@ echo "    \$sudo innobackupex --user=root --password=password \ "
 echo "		--stream=xbstream /tmp \ "
 echo "		| xbcloud put --storage=Swift \ "
 echo "		--swift-container=percona-backup \ "
-echo "		--swift-user=\$USER_NAME \ "
+echo "		--swift-user=\$ST_USER \ "
 echo "		--swift-url=http://\$SWIFT_API_IP/ \ "
-echo "		--swift-key=\$PASSWORD My_DB1"
+echo "		--swift-key=\$ST_KEY My_DB1"
 echo ""
 
 echo -e "Press \e[32m[ENTER]\e[39m to continue" 
@@ -26,14 +26,14 @@ sudo innobackupex --user=root --password=password \
 	--stream=xbstream /tmp \
 	| xbcloud put --storage=Swift \
 	--swift-container=percona \
-	--swift-user=$USER_NAME \
+	--swift-user=$ST_USER \
 	--swift-url=http://$SWIFT_API_IP/ \
-	--swift-key=$USER_KEY MY_DB1
+	--swift-key=$ST_KEY MY_DB1
 sleep 3
 echo ""
 echo -e "You can find new backup been created in Swift as \e[31mSLO large object \e[39m in container percona"
 echo ""
 
-TK=$(curl -si http://$SWIFT_API_IP/auth/v1.0 -H "x-auth-user:$USER_NAME" -H "x-auth-key:$USER_KEY"  | grep X-Storage-Token | cut -d " " -f 2)
+TK=$(curl -si http://$SWIFT_API_IP/auth/v1.0 -H "x-auth-user:$ST_USER" -H "x-auth-key:$ST_KEY"  | grep X-Storage-Token | cut -d " " -f 2)
 echo ""
 curl http://$SWIFT_API_IP/v1/AUTH_demo/percona -H "x-auth-token:$TK"
