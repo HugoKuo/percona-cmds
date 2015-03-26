@@ -1,5 +1,9 @@
 #! /bin/bash
 
+echo "This script will drop keystone db for you" 
+echo -e "Press \e[32m[ENTER]\e[39m to flush it or ctrl+c to interrupt"
+echo ""
+read enter
 mysql -uroot -ppassword -e "DROP DATABASE keystone"
 mysql -uroot -ppassword -e "DROP DATABASE key1"
 mysql -uroot -ppassword -e "DROP DATABASE key2"

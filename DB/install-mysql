@@ -1,0 +1,16 @@
+#! /bin/bash
+
+#Prepare MySQL 
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password password'
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password password'
+apt-get -y install mysql-server python-mysqldb
+mysql -uroot -ppassword -e "CREATE DATABASE keystone"
+sudo sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/my.cnf
+sudo service mysql restart
+echo ""
+echo "Mysql Server is installed" 
+echo "Credential : root / password"
+echo "A database keystone was created"
+echo ""
+mysql -uroot -ppassword -e "show databases"
+./inject-dummydb
