@@ -1,0 +1,6 @@
+#! /bin/bash
+
+wget http://www.percona.com/redir/downloads/TESTING/XtraBackup/xtrabackup-2.3.0alpha1/binary/debian/trusty/x86_64/percona-xtrabackup-23_2.3.0-5047.alpha1-1.trusty_amd64.deb
+pkg_name=percona-xtrabackup-23_2.3.0-5047.alpha1-1.trusty_amd64.deb 
+
+sudo dpkg -i $pkg_name ; sudo apt-get update ; sudo apt-get -y install -f ; sudo dpkg -i $pkg_name
